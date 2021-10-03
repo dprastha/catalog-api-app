@@ -19,6 +19,14 @@ Categories table has one to many relation with Items table.
 
 ---
 
+## Tech Stack
+
+-   Laravel 8
+-   MySQL
+-   Redis
+
+---
+
 ## Installation
 
 1. Clone this repository
