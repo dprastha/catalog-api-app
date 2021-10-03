@@ -7,6 +7,7 @@ use App\Http\Requests\Item\StoreItemRequest;
 use App\Http\Requests\Item\UpdateItemRequest;
 use App\Http\Resources\Item\ItemResource;
 use App\Models\Item;
+use App\Services\ItemService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,9 +18,10 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ItemService $itemService)
     {
-        $items = Item::with(['category']);
+        $items = $itemService->index();
+
         return ItemResource::collection($items->paginate(10));
     }
 
@@ -29,20 +31,14 @@ class ItemController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreItemRequest $request)
+    public function store(StoreItemRequest $request, ItemService $itemService)
     {
-        $item = DB::transaction(function () use ($request) {
-            $item = Item::create([
-                'name' => $request->name,
-                'category_id' => $request->category_id,
-                'description' => $request->description,
-                'price' => $request->price
-            ]);
+        $item = $itemService->store($request);
 
-            return $item;
-        });
-
-        return $item;
+        return response([
+            'data' => new ItemResource($item),
+            'message' => 'Item successfully created'
+        ]);
     }
 
     /**
@@ -51,9 +47,11 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Item $item)
+    public function show(Item $item, ItemService $itemService)
     {
-        return new ItemResource($item);
+        return response([
+            'data' => new ItemResource($itemService->show($item))
+        ]);
     }
 
     /**
@@ -63,31 +61,24 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateItemRequest $request, Item $item)
+    public function update(UpdateItemRequest $request, Item $item, ItemService $itemService)
     {
-        $item = DB::transaction(function () use ($request, $item) {
-            $item->update([
-                'name' => $request->name,
-                'category_id' => $request->category_id,
-                'description' => $request->description,
-                'price' => $request->price
-            ]);
-        });
+        $itemService->update($request, $item);
 
-        return [
+        return response([
+            'data' => new ItemResource($item),
             'message' => 'Item successfully updated'
-        ];
+        ]);
     }
 
-    public function updateItemName(Request $request, Item $item)
+    public function updateItemName(Request $request, Item $item, ItemService $itemService)
     {
-        $item->update([
-            'name' => $request->name
-        ]);
+        $itemService->updateItemName($request, $item);
 
-        return [
+        return response([
+            'data' => new ItemResource($item),
             'message' => 'Item name successfully updated'
-        ];
+        ]);
     }
 
     /**
@@ -96,12 +87,13 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Item $item)
+    public function destroy(Item $item, ItemService $itemService)
     {
-        $item->delete();
+        $itemService->destroy($item);
 
-        return [
+        return response([
+            'data' => new ItemResource($item),
             'message' => 'Item successfully deleted'
-        ];
+        ]);
     }
 }
