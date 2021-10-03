@@ -8,7 +8,7 @@ REST API for CRUD Catalog Item
 
 Design pattern that i use is implements SOLID Principle. With Creating Model, Form Request, Resource, Collection separatly. Which mean every part has own job dan responbility, prevent every part overlaping eachother, where it can make trouble when debuggin or developed by other developer. Example: with creating Form Request for validation, we don't need creating validation in Controller.
 
-In this case i adding Service Layer for gather the logic method. Service Layer is useful if we have many controller with same logic to avoid redudancy and it can reduce number of code in Controller. For the error handling handled in `handler.php`.
+In this case i adding Service Layer for gather the logic method. Service Layer is useful if we have many controller with same logic to avoid redudancy and it can reduce number of code in Controller. For the error handling handled in `handler.php`. For queries i using eager loading for faster load.
 
 ---
 
@@ -30,8 +30,14 @@ Categories table has one to many relation with Items table.
 7. `docker compose up -d`
 8. `php artisan serve`
 
+---
+
 ## API Documentation
 
 https://documenter.getpostman.com/view/13334944/UUy39mwg
 
 ---
+
+## Demo Video
+
+https://www.loom.com/share/880ca439d30e4f4399f026280831cd21
