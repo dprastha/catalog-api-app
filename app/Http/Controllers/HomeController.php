@@ -7,6 +7,7 @@ use App\Http\Resources\Item\ItemCollection;
 use App\Models\Category;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class HomeController extends Controller
 {
@@ -17,7 +18,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::withCount('items')->get();
         $items = Item::with('category')->get();
 
         return view('home', [

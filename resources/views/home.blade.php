@@ -28,7 +28,7 @@
               <div class="list-group">
                 @foreach ($categories as $category)
                   <a class="list-group-item">
-                    {{ $category->name }}
+                    {{ $category->name }} {{ $category->items_count }}
                   </a>
                 @endforeach
               </div>
@@ -48,6 +48,7 @@
                               </h4>
                               <h5>$ {{ $item->price }}</h5>
                               <p class="card-text">{{ $item->description }}</p>
+                              <p class="card-text">Category : {{ $item->category->name }}</p>
                           </div>
                       </div>
                   </div>

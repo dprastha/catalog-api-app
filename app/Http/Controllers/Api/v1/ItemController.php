@@ -8,6 +8,7 @@ use App\Http\Requests\Item\UpdateItemRequest;
 use App\Http\Resources\Item\ItemResource;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -30,12 +31,18 @@ class ItemController extends Controller
      */
     public function store(StoreItemRequest $request)
     {
-        return Item::create([
-            'name' => $request->name,
-            'category_id' => $request->category_id,
-            'description' => $request->description,
-            'price' => $request->price
-        ]);
+        $item = DB::transaction(function () use ($request) {
+            $item = Item::create([
+                'name' => $request->name,
+                'category_id' => $request->category_id,
+                'description' => $request->description,
+                'price' => $request->price
+            ]);
+
+            return $item;
+        });
+
+        return $item;
     }
 
     /**
@@ -58,12 +65,14 @@ class ItemController extends Controller
      */
     public function update(UpdateItemRequest $request, Item $item)
     {
-        $item->update([
-            'name' => $request->name,
-            'category_id' => $request->category_id,
-            'description' => $request->description,
-            'price' => $request->price
-        ]);
+        $item = DB::transaction(function () use ($request, $item) {
+            $item->update([
+                'name' => $request->name,
+                'category_id' => $request->category_id,
+                'description' => $request->description,
+                'price' => $request->price
+            ]);
+        });
 
         return [
             'message' => 'Item successfully updated'
